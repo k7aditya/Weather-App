@@ -57,6 +57,21 @@
   /* background-color: #e2d4ff; */
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center ;
+}
+
+.heading{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1{
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(to right, #ffa75f, #ff8533);
+  -webkit-background-clip: text;
+  background-clip: text;  
+  color: transparent;
 }

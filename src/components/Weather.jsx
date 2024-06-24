@@ -14,14 +14,14 @@ import { useRef } from "react";
 const Weather = () => {
   const inputRef = useRef();
   const [weatherData, setWeatherData] = useState(false);
-  const [warning, setWarning] = useState(""); 
+  const [warning, setWarning] = useState("");
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   const search = async (city) => {
-    setWarning(""); 
+    setWarning("");
     if (city === "") {
       setWarning(capitalizeFirstLetter("enter City Name"));
       return;
@@ -55,8 +55,53 @@ const Weather = () => {
     }
   };
 
+  const searchByCoordinates = async (latitude, longitude) => {
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${
+        import.meta.env.VITE_APP_ID
+      }`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+      if (!response.ok) {
+        setWarning(capitalizeFirstLetter(data.message));
+        return;
+      }
+      console.log(data);
+      const icon =
+        `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png` ||
+        clear;
+
+      setWeatherData({
+        humidity: data.main.humidity,
+        windSpeed: data.wind.speed,
+        temperature: Math.floor(data.main.temp),
+        location: data.name,
+        icon: icon,
+      });
+    } catch (error) {
+      setWeatherData(false);
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    search("London");
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          searchByCoordinates(latitude, longitude);
+        },
+        (error) => {
+          console.error("Error retrieving location:", error);
+          setWarning("Enable location access to view your current weather else search for any city...");
+          setWeatherData(false);
+        }
+      );
+    } else {
+      setWarning("Geolocation is not supported by your browser, search for any city");
+      setWeatherData(false);
+    }
   }, []);
 
   const handleKeyDown = (event) => {
@@ -68,14 +113,19 @@ const Weather = () => {
   return (
     <div className="weather">
       <div className="search-bar">
-        <input ref={inputRef} type="text" placeholder="Enter City..." onKeyDown={handleKeyDown}/>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Enter City..."
+          onKeyDown={handleKeyDown}
+        />
         <img
           src={search_icon}
           alt=""
           onClick={() => search(inputRef.current.value)}
         />
       </div>
-      {warning && <p className="warning">{warning}</p>}{" "}
+      {warning && <p className="warning">{warning}</p>}
       {weatherData ? (
         <>
           <img src={weatherData.icon} alt="" className="weather-icon" />
