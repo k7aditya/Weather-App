@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useRef } from "react";
 
+const API_ID="87d963751d2a3e7fdeb7e0894d70a6f0";
+
 const Weather = () => {
   const inputRef = useRef();
   const [weatherData, setWeatherData] = useState(false);
@@ -28,7 +30,7 @@ const Weather = () => {
     }
     try {
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${
-        import.meta.env.VITE_APP_ID
+        API_ID
       }`;
 
       const response = await fetch(url);
@@ -58,7 +60,7 @@ const Weather = () => {
   const searchByCoordinates = async (latitude, longitude) => {
     try {
       const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${
-        import.meta.env.VITE_APP_ID
+        API_ID
       }`;
 
       const response = await fetch(url);
